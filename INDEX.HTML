@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Workspace AI - Enterprise Solution</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Professional Custom CSS --- */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Slate-50 */
+        }
+
+        /* Smooth Fade In */
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sidebar Active State */
+        .sidebar-link {
+            position: relative;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar-link.active {
+            background-color: #4f46e5; /* Indigo-600 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+
+        .sidebar-link.active i {
+            color: white;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Radar Chart Simulation (CSS Shapes) */
+        .radar-poly {
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden text-slate-600">
+
+    <!-- --- SIDEBAR (Dark Theme) --- -->
+    <aside class="w-72 bg-slate-900 text-slate-300 flex-shrink-0 hidden md:flex flex-col transition-all duration-300">
+        <!-- Brand -->
+        <div class="h-16 flex items-center px-6 border-b border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-500 p-1.5 rounded-lg shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="layers" class="text-white h-5 w-5"></i>
+                </div>
+                <span class="text-lg font-bold text-white tracking-tight">Nexus<span class="text-indigo-400">Workspace</span></span>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-1.5">
+            <div class="px-4 mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Main Menu</div>
+            
+            <a href="#" onclick="showView('dashboard')" id="nav-dashboard" class="sidebar-link active flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium">
+                <i data-lucide="layout-grid" class="h-5 w-5 transition-colors"></i>
+                <span>Overview Dashboard</span>
+            </a>
+            <a href="#" onclick="showView('training')" id="nav-training" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium">
+                <i data-lucide="graduation-cap" class="h-5 w-5 text-slate-400 transition-colors"></i>
+                <span>Skill Development</span>
+            </a>
+            <a href="#" onclick="showView('team')" id="nav-team" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium">
+                <i data-lucide="users-2" class="h-5 w-5 text-slate-400 transition-colors"></i>
+                <span>Collaboration Hub</span>
+            </a>
+            
+            <div class="px-4 mt-8 mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Tools</div>
+            
+            <a href="#" onclick="showView('assistant')" id="nav-assistant" class="sidebar-link flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium">
+                <i data-lucide="sparkles" class="h-5 w-5 text-slate-400 transition-colors"></i>
+                <span>AI Assistant</span>
+            </a>
+        </nav>
+
+        <!-- User Profile (Bottom) -->
+        <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+            <button class="flex items-center gap-3 w-full hover:bg-slate-800 p-2 rounded-lg transition-colors">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" class="h-9 w-9 rounded-full bg-indigo-100 border border-indigo-500/30">
+                <div class="text-left overflow-hidden">
+                    <p class="text-sm font-semibold text-white truncate">Alex Morgan</p>
+                    <p class="text-xs text-slate-400 truncate">Senior Developer</p>
+                </div>
+                <i data-lucide="chevron-up" class="ml-auto h-4 w-4 text-slate-500"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- --- MAIN CONTENT --- -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-slate-50">
+        
+        <!-- Mobile Header -->
+        <header class="md:hidden bg-white border-b border-slate-200 p-4 flex justify-between items-center sticky top-0 z-20">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-1.5 rounded text-white"><i data-lucide="layers" class="h-4 w-4"></i></div>
+                <span class="font-bold text-slate-800">Nexus</span>
+            </div>
+            <button class="p-2 text-slate-600"><i data-lucide="menu"></i></button>
+        </header>
+
+        <!-- Desktop Header (Top Bar) -->
+        <header class="hidden md:flex items-center justify-between h-16 px-8 border-b border-slate-200 bg-white sticky top-0 z-10">
+            <!-- Breadcrumb / Title -->
+            <div class="flex items-center text-sm text-slate-500">
+                <span class="hover:text-slate-800 cursor-pointer">Workspace</span>
+                <i data-lucide="chevron-right" class="h-4 w-4 mx-2"></i>
+                <span id="page-title" class="font-medium text-slate-800">Overview Dashboard</span>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center space-x-4">
+                <button class="p-2 text-slate-400 hover:text-indigo-600 transition-colors relative">
+                    <i data-lucide="bell" class="h-5 w-5"></i>
+                    <span class="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full border-2 border-white"></span>
+                </button>
+                <div class="h-8 w-px bg-slate-200"></div>
+                <div class="flex items-center gap-2 bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100">
+                    <i data-lucide="trophy" class="h-4 w-4 text-indigo-600"></i>
+                    <span class="text-xs font-bold text-indigo-700">Level 5</span>
+                    <span class="text-xs text-indigo-400">|</span>
+                    <span class="text-xs font-medium text-indigo-600">1,250 XP</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- SCROLLABLE CONTENT AREA -->
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 relative" id="content-area">
+            
+            <!-- VIEW: DASHBOARD -->
+            <div id="dashboard-view" class="fade-in space-y-6 max-w-7xl mx-auto">
+                <!-- Welcome Banner -->
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">Good Morning, Alex! ☀️</h1>
+                        <p class="text-slate-500 mt-1">Here's what's happening in your workspace today.</p>
+                    </div>
+                    <button onclick="showModal('idea-modal')" class="hidden sm:flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg shadow-slate-900/20">
+                        <i data-lucide="plus" class="h-4 w-4"></i> New Idea
+                    </button>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <i data-lucide="zap" class="h-24 w-24 text-indigo-600 -mr-4 -mt-4"></i>
+                        </div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                                <i data-lucide="activity" class="h-6 w-6"></i>
+                            </div>
+                            <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">+12% vs last week</span>
+                        </div>
+                        <p class="text-slate-500 text-sm font-medium">Productivity Score</p>
+                        <h3 class="text-3xl font-bold text-slate-900 mt-1">94<span class="text-lg text-slate-400">/100</span></h3>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                                <i data-lucide="book-open" class="h-6 w-6"></i>
+                            </div>
+                            <span class="text-xs font-medium text-slate-500">2 pending</span>
+                        </div>
+                        <p class="text-slate-500 text-sm font-medium">Learning Path</p>
+                        <h3 class="text-3xl font-bold text-slate-900 mt-1">82% <span class="text-sm font-normal text-slate-500">Complete</span></h3>
+                        <div class="w-full bg-slate-100 rounded-full h-1.5 mt-3">
+                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 82%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
+                                <i data-lucide="lightbulb" class="h-6 w-6"></i>
+                            </div>
+                        </div>
+                        <p class="text-slate-500 text-sm font-medium">Team Innovation Ideas</p>
+                        <div class="flex items-end gap-2 mt-1">
+                            <h3 class="text-3xl font-bold text-slate-900">14</h3>
+                            <p class="text-sm text-slate-500 mb-1">ideas this month</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart / Main Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Main Chart Area (Mockup) -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-slate-800">Weekly Focus Area</h3>
+                            <select class="text-sm border-none bg-slate-50 text-slate-600 rounded-md px-2 py-1 focus:ring-0 cursor-pointer">
+                                <option>Last 7 Days</option>
+                            </select>
+                        </div>
+                        <!-- CSS Mock Chart -->
+                        <div class="h-64 flex items-end justify-between gap-2 px-2">
+                            <div class="w-full bg-slate-50 rounded-t-lg relative group" style="height: 40%">
+                                <div class="absolute bottom-0 w-full bg-indigo-200 group-hover:bg-indigo-300 transition-colors rounded-t-lg" style="height: 60%"></div>
+                                <p class="text-xs text-center -bottom-6 absolute w-full text-slate-400">Mon</p>
+                            </div>
+                            <div class="w-full bg-slate-50 rounded-t-lg relative group" style="height: 65%">
+                                <div class="absolute bottom-0 w-full bg-indigo-200 group-hover:bg-indigo-300 transition-colors rounded-t-lg" style="height: 80%"></div>
+                                <p class="text-xs text-center -bottom-6 absolute w-full text-slate-400">Tue</p>
+                            </div>
+                            <div class="w-full bg-slate-50 rounded-t-lg relative group" style="height: 50%">
+                                <div class="absolute bottom-0 w-full bg-indigo-200 group-hover:bg-indigo-300 transition-colors rounded-t-lg" style="height: 40%"></div>
+                                <p class="text-xs text-center -bottom-6 absolute w-full text-slate-400">Wed</p>
+                            </div>
+                            <div class="w-full bg-slate-50 rounded-t-lg relative group" style="height: 85%">
+                                <div class="absolute bottom-0 w-full bg-indigo-500 group-hover:bg-indigo-600 transition-colors rounded-t-lg shadow-lg shadow-indigo-500/20" style="height: 100%"></div>
+                                <p class="text-xs text-center -bottom-6 absolute w-full font-bold text-indigo-600">Thu</p>
+                            </div>
+                            <div class="w-full bg-slate-50 rounded-t-lg relative group" style="height: 60%">
+                                <div class="absolute bottom-0 w-full bg-indigo-200 group-hover:bg-indigo-300 transition-colors rounded-t-lg" style="height: 50%"></div>
+                                <p class="text-xs text-center -bottom-6 absolute w-full text-slate-400">Fri</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Achievements List -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-slate-800 mb-4">Recent Achievements</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border border-transparent hover:border-slate-100">
+                                <div class="bg-yellow-100 p-2 rounded-lg text-yellow-600 flex-shrink-0">
+                                    <i data-lucide="award" class="h-5 w-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">Early Bird</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Logged in before 9 AM for 5 days</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border border-transparent hover:border-slate-100">
+                                <div class="bg-blue-100 p-2 rounded-lg text-blue-600 flex-shrink-0">
+                                    <i data-lucide="code-2" class="h-5 w-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">Code Master</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Completed React Basics</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border border-transparent hover:border-slate-100">
+                                <div class="bg-purple-100 p-2 rounded-lg text-purple-600 flex-shrink-0">
+                                    <i data-lucide="share-2" class="h-5 w-5"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">Team Player</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">Shared 5 resources</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="w-full mt-4 py-2 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                            View All Badges
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: AI TRAINING (Expanded) -->
+            <div id="training-view" class="fade-in hidden max-w-6xl mx-auto">
+                <!-- Header & Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="md:col-span-3">
+                        <h2 class="text-2xl font-bold text-slate-900">Skill Development Center</h2>
+                        <p class="text-slate-500">Track your growth and bridge skill gaps with AI-curated paths.</p>
+                    </div>
+                    <!-- Streak Widget -->
+                    <div class="bg-orange-50 border border-orange-100 rounded-xl p-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold text-orange-700 uppercase tracking-wider">Daily Streak</p>
+                            <p class="text-2xl font-bold text-orange-900">12 Days 🔥</p>
+                        </div>
+                        <div class="h-10 w-10 bg-white rounded-full flex items-center justify-center text-orange-500 shadow-sm">
+                            <i data-lucide="calendar-check" class="h-5 w-5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Column: Filters & Courses -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Filters -->
+                        <div class="flex gap-2 overflow-x-auto pb-2">
+                            <button class="px-4 py-2 bg-slate-900 text-white rounded-full text-sm font-medium shadow-md">All Courses</button>
+                            <button class="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full text-sm font-medium">Technical</button>
+                            <button class="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full text-sm font-medium">Soft Skills</button>
+                            <button class="px-4 py-2 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full text-sm font-medium">Leadership</button>
+                        </div>
+
+                        <!-- Course Card 1 -->
+                        <div class="bg-white rounded-xl p-1 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group">
+                            <div class="flex flex-col md:flex-row p-5 gap-6">
+                                <div class="h-32 w-full md:w-48 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center text-white shadow-inner relative overflow-hidden">
+                                    <i data-lucide="brain-circuit" class="h-12 w-12 relative z-10"></i>
+                                    <div class="absolute inset-0 bg-white/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between py-1">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-bold border border-indigo-100">Top Pick</span>
+                                            <span class="text-slate-400 text-xs">•</span>
+                                            <span class="text-slate-500 text-xs">Technical Skill</span>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">AI Tools for Modern Developers</h3>
+                                        <p class="text-slate-500 text-sm mt-2 line-clamp-2">Master the integration of LLMs into your daily coding workflow. Learn prompt engineering for developers and how to use Copilot effectively.</p>
+                                    </div>
+                                    <div class="flex items-center gap-6 mt-4">
+                                        <div class="flex items-center gap-1.5 text-slate-500 text-sm">
+                                            <i data-lucide="clock" class="h-4 w-4"></i> 2h 30m
+                                        </div>
+                                        <div class="flex items-center gap-1.5 text-slate-500 text-sm">
+                                            <i data-lucide="star" class="h-4 w-4 text-yellow-400 fill-yellow-400"></i> 4.8
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col justify-center border-l border-slate-100 pl-0 md:pl-6 mt-4 md:mt-0">
+                                    <button class="bg-slate-900 hover:bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-medium transition-all shadow-lg shadow-slate-900/20 hover:shadow-indigo-600/30 whitespace-nowrap">
+                                        Start Course
+                                    </button>
+                                    <button class="mt-2 text-xs font-medium text-slate-500 hover:text-slate-800 text-center">Save for later</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Course Card 2 -->
+                        <div class="bg-white rounded-xl p-1 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group">
+                            <div class="flex flex-col md:flex-row p-5 gap-6">
+                                <div class="h-32 w-full md:w-48 bg-gradient-to-br from-orange-400 to-pink-500 rounded-lg flex items-center justify-center text-white shadow-inner relative overflow-hidden">
+                                    <i data-lucide="users" class="h-12 w-12 relative z-10"></i>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between py-1">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-orange-50 text-orange-700 text-xs px-2.5 py-0.5 rounded-full font-bold border border-orange-100">Soft Skills</span>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-slate-900 group-hover:text-orange-600 transition-colors">Collaborative Problem Solving</h3>
+                                        <p class="text-slate-500 text-sm mt-2 line-clamp-2">Strategies for overcoming resistance to change in large teams.</p>
+                                    </div>
+                                    <div class="flex items-center gap-6 mt-4">
+                                        <div class="flex items-center gap-1.5 text-slate-500 text-sm">
+                                            <i data-lucide="clock" class="h-4 w-4"></i> 45m
+                                        </div>
+                                        <div class="w-24 bg-slate-100 rounded-full h-2 overflow-hidden">
+                                            <div class="bg-orange-500 h-full w-1/2"></div>
+                                        </div>
+                                        <span class="text-xs text-slate-500">50% Complete</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col justify-center border-l border-slate-100 pl-0 md:pl-6 mt-4 md:mt-0">
+                                    <button class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-6 py-2.5 rounded-lg font-medium transition-colors whitespace-nowrap">
+                                        Resume
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Course Card 3 (New) -->
+                        <div class="bg-white rounded-xl p-1 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group opacity-75 hover:opacity-100">
+                            <div class="flex flex-col md:flex-row p-5 gap-6">
+                                <div class="h-32 w-full md:w-48 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 shadow-inner">
+                                    <i data-lucide="lock" class="h-8 w-8"></i>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between py-1">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-0.5 rounded-full font-bold border border-slate-200">Leadership</span>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-slate-700">Managing Remote Teams</h3>
+                                        <p class="text-slate-500 text-sm mt-2">Unlock this course by completing 'Collaborative Problem Solving'.</p>
+                                    </div>
+                                    <div class="flex items-center gap-6 mt-4">
+                                        <div class="flex items-center gap-1.5 text-slate-400 text-sm">
+                                            <i data-lucide="clock" class="h-4 w-4"></i> 1h 15m
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col justify-center border-l border-slate-100 pl-0 md:pl-6 mt-4 md:mt-0">
+                                    <button class="bg-slate-100 text-slate-400 cursor-not-allowed px-6 py-2.5 rounded-lg font-medium whitespace-nowrap">
+                                        Locked
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Skill Analysis -->
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 mb-4">Skill Proficiency</h3>
+                            <!-- Radar Chart Mockup -->
+                            <div class="relative w-full aspect-square bg-slate-50 rounded-full border border-slate-200 flex items-center justify-center overflow-hidden">
+                                <!-- Grid Lines -->
+                                <div class="absolute w-3/4 h-3/4 border border-slate-200 rounded-full"></div>
+                                <div class="absolute w-1/2 h-1/2 border border-slate-200 rounded-full"></div>
+                                <div class="absolute w-1/4 h-1/4 border border-slate-200 rounded-full"></div>
+                                <div class="absolute w-full h-px bg-slate-200"></div>
+                                <div class="absolute h-full w-px bg-slate-200"></div>
+                                
+                                <!-- The Shape -->
+                                <div class="absolute w-2/3 h-2/3 bg-indigo-500/20 radar-poly transform rotate-12"></div>
+                                <div class="absolute w-2/3 h-2/3 border-2 border-indigo-500 radar-poly transform rotate-12"></div>
+                                
+                                <!-- Labels -->
+                                <div class="absolute top-2 text-[10px] font-bold text-slate-500">Coding</div>
+                                <div class="absolute bottom-2 text-[10px] font-bold text-slate-500">Leadership</div>
+                                <div class="absolute left-2 text-[10px] font-bold text-slate-500">Design</div>
+                                <div class="absolute right-2 text-[10px] font-bold text-slate-500">Comms</div>
+                            </div>
+                            <div class="mt-4 space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-500">Technical</span>
+                                    <span class="font-bold text-indigo-600">85%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-1.5">
+                                    <div class="bg-indigo-600 h-1.5 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-slate-500">Communication</span>
+                                    <span class="font-bold text-orange-500">62%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-1.5">
+                                    <div class="bg-orange-500 h-1.5 rounded-full" style="width: 62%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: AI ASSISTANT (Smarter) -->
+            <div id="assistant-view" class="hidden fade-in h-[calc(100vh-140px)] flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-w-4xl mx-auto">
+                <!-- Chat Header -->
+                <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                    <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-600/20">
+                            <i data-lucide="sparkles" class="h-5 w-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900">Nexus Assistant</h3>
+                            <div class="flex items-center gap-1.5">
+                                <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                                <span class="text-xs text-slate-500">Context Aware</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="text-slate-400 hover:text-slate-600"><i data-lucide="more-vertical" class="h-5 w-5"></i></button>
+                </div>
+
+                <!-- Chat Area -->
+                <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6 bg-white">
+                    <div class="text-center text-xs text-slate-400 my-4">Today</div>
+                    
+                    <!-- Bot Intro -->
+                    <div class="flex items-start gap-4 max-w-2xl">
+                        <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0 border border-indigo-200">
+                            <i data-lucide="bot" class="h-4 w-4"></i>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-bold text-slate-500 ml-1">Nexus AI</span>
+                            <div class="bg-slate-100 p-4 rounded-2xl rounded-tl-none text-slate-700 text-sm leading-relaxed">
+                                Hello Alex! I'm connected to your workspace data. I can help you navigate courses, submit ideas, or clarify HR policies.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions & Input -->
+                <div class="p-4 bg-white border-t border-slate-100">
+                    <!-- Quick Chips -->
+                    <div class="flex gap-2 mb-3 overflow-x-auto scrollbar-hide">
+                        <button onclick="prefillChat('Suggest a training course')" class="whitespace-nowrap text-xs font-medium bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-full border border-slate-200 transition-colors">
+                            Suggest Training
+                        </button>
+                        <button onclick="prefillChat('I have a new idea')" class="whitespace-nowrap text-xs font-medium bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-full border border-slate-200 transition-colors">
+                            Submit Idea
+                        </button>
+                        <button onclick="prefillChat('Show remote work policy')" class="whitespace-nowrap text-xs font-medium bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-full border border-slate-200 transition-colors">
+                            Remote Policy
+                        </button>
+                        <button onclick="prefillChat('Report a bug')" class="whitespace-nowrap text-xs font-medium bg-slate-50 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 px-3 py-1.5 rounded-full border border-slate-200 transition-colors">
+                            Report Issue
+                        </button>
+                    </div>
+
+                    <form id="chat-form" class="relative flex gap-2 items-end bg-slate-50 p-2 rounded-xl border border-slate-200 focus-within:border-indigo-300 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all">
+                        <button type="button" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors"><i data-lucide="paperclip" class="h-5 w-5"></i></button>
+                        <textarea id="chat-input" rows="1" placeholder="Ask Nexus AI..." class="flex-1 bg-transparent border-none focus:ring-0 resize-none py-2 text-sm text-slate-700 max-h-32"></textarea>
+                        <button type="submit" class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md shadow-indigo-600/20 transition-all">
+                            <i data-lucide="send" class="h-4 w-4"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VIEW: TEAM HUB (Expanded) -->
+            <div id="team-view" class="hidden fade-in max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <!-- Main Feed -->
+                    <div class="lg:col-span-3 space-y-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2 class="text-2xl font-bold text-slate-900">Innovation Hub</h2>
+                                <p class="text-slate-500">Collaborate on solutions for corporate challenges.</p>
+                            </div>
+                            <button onclick="showModal('idea-modal')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg shadow-indigo-600/20 transition-colors flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="h-4 w-4"></i> New Idea
+                            </button>
+                        </div>
+
+                        <!-- Feed Tabs -->
+                        <div class="border-b border-slate-200 flex gap-6">
+                            <button class="pb-3 border-b-2 border-indigo-600 text-indigo-600 font-medium text-sm">Trending</button>
+                            <button class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm">Latest</button>
+                            <button class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm">My Ideas</button>
+                        </div>
+
+                        <!-- Post 1 (Interactive) -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="h-10 w-10 rounded-full bg-slate-100 border border-slate-200">
+                                    <div>
+                                        <h3 class="font-bold text-slate-900 text-sm">Sarah Connor</h3>
+                                        <p class="text-xs text-slate-500">Product Manager • 2h ago</p>
+                                    </div>
+                                </div>
+                                <button class="text-slate-400 hover:text-slate-600"><i data-lucide="more-horizontal" class="h-5 w-5"></i></button>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <span class="bg-purple-50 text-purple-700 text-xs px-2.5 py-0.5 rounded-full font-bold border border-purple-100 inline-block mb-2">Process Improvement</span>
+                                <h4 class="font-bold text-lg text-slate-800 mb-2">Proposal: "Fail Fast" Fridays</h4>
+                                <p class="text-slate-600 text-sm leading-relaxed">
+                                    To combat the resistance to using new tools, I propose we host a weekly 30-minute session where we share what *didn't* work with the new AI system. It destigmatizes errors and helps us learn collectively.
+                                </p>
+                            </div>
+
+                            <!-- Engagement Stats -->
+                            <div class="flex items-center gap-4 border-t border-slate-100 pt-4 mt-4">
+                                <button onclick="toggleLike(this)" class="group flex items-center gap-2 text-slate-500 text-sm font-medium hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors">
+                                    <i data-lucide="thumbs-up" class="h-4 w-4 group-hover:text-indigo-600 transition-colors"></i> 
+                                    <span class="group-hover:text-indigo-600">12 Votes</span>
+                                </button>
+                                <button class="flex items-center gap-2 text-slate-500 text-sm font-medium hover:bg-slate-50 px-3 py-1.5 rounded-lg transition-colors">
+                                    <i data-lucide="message-circle" class="h-4 w-4"></i> 4 Comments
+                                </button>
+                                <button class="flex items-center gap-2 text-slate-500 text-sm font-medium hover:bg-slate-50 px-3 py-1.5 rounded-lg transition-colors ml-auto">
+                                    <i data-lucide="share-2" class="h-4 w-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Post 2 -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mike" class="h-10 w-10 rounded-full bg-slate-100 border border-slate-200">
+                                    <div>
+                                        <h3 class="font-bold text-slate-900 text-sm">Mike Chen</h3>
+                                        <p class="text-xs text-slate-500">DevOps • 5h ago</p>
+                                    </div>
+                                </div>
+                                <button class="text-slate-400 hover:text-slate-600"><i data-lucide="more-horizontal" class="h-5 w-5"></i></button>
+                            </div>
+                            <div class="mb-4">
+                                <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-100 inline-block mb-2">Technical</span>
+                                <h4 class="font-bold text-lg text-slate-800 mb-2">Legacy System Bridge</h4>
+                                <p class="text-slate-600 text-sm leading-relaxed">
+                                    I've written a simple API wrapper that allows the new AI bot to query the old SQL database. Check the repo here.
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-4 border-t border-slate-100 pt-4 mt-4">
+                                <button onclick="toggleLike(this)" class="group flex items-center gap-2 text-slate-500 text-sm font-medium hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors">
+                                    <i data-lucide="thumbs-up" class="h-4 w-4 group-hover:text-indigo-600 transition-colors"></i> 
+                                    <span class="group-hover:text-indigo-600">45 Votes</span>
+                                </button>
+                                <button class="flex items-center gap-2 text-slate-500 text-sm font-medium hover:bg-slate-50 px-3 py-1.5 rounded-lg transition-colors">
+                                    <i data-lucide="message-circle" class="h-4 w-4"></i> 12 Comments
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Info -->
+                    <div class="space-y-6">
+                        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-900 mb-3">Trending Topics</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-md font-medium hover:bg-slate-200 cursor-pointer">#AI_Adoption</span>
+                                <span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-md font-medium hover:bg-slate-200 cursor-pointer">#RemoteWork</span>
+                                <span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-md font-medium hover:bg-slate-200 cursor-pointer">#SkillGap</span>
+                                <span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded-md font-medium hover:bg-slate-200 cursor-pointer">#TeamBonding</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-5 rounded-xl shadow-lg text-white">
+                            <h3 class="font-bold mb-2">Challenge of the Month</h3>
+                            <p class="text-xs text-indigo-100 mb-4">Submit an idea that saves at least 2 hours of manual work per week.</p>
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-xs font-bold text-indigo-200">Reward</p>
+                                    <p class="font-bold">Innovation Star Badge</p>
+                                </div>
+                                <i data-lucide="medal" class="h-8 w-8 text-yellow-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- --- MODALS --- -->
+    
+    <!-- New Idea Modal -->
+    <div id="idea-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-overlay p-4 fade-in">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden transform scale-100 transition-transform">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-900">Submit New Idea</h3>
+                <button onclick="closeModal('idea-modal')" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="h-5 w-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                    <input type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" placeholder="e.g. Weekly Fail Fast Session">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                    <select class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                        <option>Process Improvement</option>
+                        <option>Technical Solution</option>
+                        <option>Team Culture</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                    <textarea rows="4" class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none resize-none" placeholder="Describe your idea..."></textarea>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeModal('idea-modal')" class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-200 rounded-lg transition-colors">Cancel</button>
+                <button onclick="closeModal('idea-modal')" class="px-4 py-2 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-lg transition-colors shadow-lg shadow-indigo-600/20">Submit Idea</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- JAVASCRIPT --- -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Navigation Logic
+        function showView(viewId) {
+            ['dashboard', 'training', 'assistant', 'team'].forEach(id => {
+                document.getElementById(`${id}-view`).classList.add('hidden');
+                const navItem = document.getElementById(`nav-${id}`);
+                if(navItem) {
+                    navItem.classList.remove('active');
+                    navItem.classList.add('text-slate-400');
+                    const icon = navItem.querySelector('i');
+                    if(icon) icon.classList.add('text-slate-400');
+                }
+            });
+
+            document.getElementById(`${viewId}-view`).classList.remove('hidden');
+            
+            const titles = {
+                'dashboard': 'Overview Dashboard',
+                'training': 'Skill Development',
+                'assistant': 'AI Assistant',
+                'team': 'Collaboration Hub'
+            };
+            document.getElementById('page-title').innerText = titles[viewId];
+
+            const activeNav = document.getElementById(`nav-${viewId}`);
+            if(activeNav) {
+                activeNav.classList.add('active');
+                activeNav.classList.remove('text-slate-400');
+                const icon = activeNav.querySelector('i');
+                if(icon) icon.classList.remove('text-slate-400');
+            }
+        }
+
+        // Chat Logic
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatContainer = document.getElementById('chat-container');
+
+        function prefillChat(text) {
+            chatInput.value = text;
+            chatInput.focus();
+        }
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            appendMessage(message, 'user');
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+
+            const loadingId = showTypingIndicator();
+
+            // Smart Response Logic
+            setTimeout(() => {
+                removeTypingIndicator(loadingId);
+                const lowerMsg = message.toLowerCase();
+                let response = "";
+
+                // Simple Keyword Matching State Machine
+                if (lowerMsg.includes("training") || lowerMsg.includes("course") || lowerMsg.includes("learn")) {
+                    response = `I found a highly rated course for you: <b>'AI Tools for Modern Developers'</b>. It matches your technical profile.<br><br><button onclick="showView('training')" class="mt-2 text-xs bg-indigo-600 text-white px-3 py-1 rounded-md hover:bg-indigo-700">Go to Training</button>`;
+                } 
+                else if (lowerMsg.includes("idea") || lowerMsg.includes("suggestion")) {
+                    response = `That's great! Innovation drives us forward. You can submit your idea directly to the Team Hub.<br><br><button onclick="showModal('idea-modal')" class="mt-2 text-xs bg-indigo-600 text-white px-3 py-1 rounded-md hover:bg-indigo-700">Open Submission Form</button>`;
+                }
+                else if (lowerMsg.includes("policy") || lowerMsg.includes("remote") || lowerMsg.includes("hr")) {
+                    response = `<b>Remote Work Policy (Section 4.2):</b><br>Employees are permitted to work remotely up to 3 days a week with manager approval. Core hours are 10 AM - 3 PM.<br><br>Would you like to download the full PDF?`;
+                }
+                else if (lowerMsg.includes("bug") || lowerMsg.includes("issue") || lowerMsg.includes("help")) {
+                    response = `I'm sorry you're facing an issue. I've logged ticket <b>#IT-9942</b> for you. Support usually responds within 2 hours.`;
+                }
+                else {
+                    const defaults = [
+                        "I can help you with HR policies, technical documentation, or finding training. What do you need?",
+                        "I'm not sure about that, but I can search the internal knowledge base for you.",
+                        "Could you rephrase that? I'm optimized to help with Workspace tasks."
+                    ];
+                    response = defaults[Math.floor(Math.random() * defaults.length)];
+                }
+
+                appendMessage(response, 'bot');
+            }, 1200);
+        });
+
+        function showTypingIndicator() {
+            const id = 'typing-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex items-start gap-4 max-w-2xl animate-pulse';
+            div.innerHTML = `
+                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 border border-indigo-200">
+                    <i data-lucide="bot" class="h-4 w-4 text-indigo-600"></i>
+                </div>
+                <div class="bg-slate-100 p-3 rounded-2xl rounded-tl-none flex items-center gap-1">
+                    <div class="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce"></div>
+                    <div class="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="h-1.5 w-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+            `;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            lucide.createIcons();
+            return id;
+        }
+
+        function removeTypingIndicator(id) {
+            const element = document.getElementById(id);
+            if(element) element.remove();
+        }
+
+        function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `flex items-start gap-4 max-w-2xl ${sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`;
+            
+            const avatar = sender === 'user' 
+                ? `<div class="h-8 w-8 rounded-full bg-indigo-600 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-md"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" /></div>`
+                : `<div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 flex-shrink-0 border border-indigo-200"><i data-lucide="bot" class="h-4 w-4"></i></div>`;
+
+            const bubbleStyle = sender === 'user' 
+                ? 'bg-indigo-600 text-white rounded-2xl rounded-tr-none shadow-md shadow-indigo-200' 
+                : 'bg-slate-100 text-slate-700 rounded-2xl rounded-tl-none';
+
+            div.innerHTML = `
+                ${avatar}
+                <div class="flex flex-col gap-1 ${sender === 'user' ? 'items-end' : 'items-start'}">
+                    <span class="text-xs font-bold text-slate-400 mx-1">${sender === 'user' ? 'You' : 'Nexus AI'}</span>
+                    <div class="${bubbleStyle} p-3 text-sm leading-relaxed">
+                        ${text}
+                    </div>
+                </div>
+            `;
+            
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            if(sender === 'bot') lucide.createIcons();
+        }
+
+        // Modal Logic
+        function showModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // Like Button Toggle
+        function toggleLike(btn) {
+            const icon = btn.querySelector('i');
+            const textSpan = btn.querySelector('span');
+            const currentText = textSpan.innerText;
+            let count = parseInt(currentText);
+            
+            if (btn.classList.contains('liked')) {
+                btn.classList.remove('liked', 'bg-indigo-50');
+                icon.classList.remove('text-indigo-600', 'fill-indigo-600');
+                textSpan.classList.remove('text-indigo-600');
+                textSpan.innerText = (count - 1) + " Votes";
+            } else {
+                btn.classList.add('liked', 'bg-indigo-50');
+                icon.classList.add('text-indigo-600', 'fill-indigo-600');
+                textSpan.classList.add('text-indigo-600');
+                textSpan.innerText = (count + 1) + " Votes";
+            }
+        }
+    </script>
+</body>
+</html>
